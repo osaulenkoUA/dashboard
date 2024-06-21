@@ -29,9 +29,9 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
 
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
+        <form onSubmit={handleSubmit} className={"bg-white rounded-lg shadow-md p-4 block mt-8"}>
             <div className="mb-4">
-                <label htmlFor="name" className="block text-gray-700">Назва продукта</label>
+                <label htmlFor="name" className={"block text-pink-900 font-bold"}>Назва продукта</label>
                 <input
                     type="text"
                     name="name"
@@ -43,7 +43,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="group" className="block text-gray-700">Група</label>
+                <label htmlFor="group" className="block text-pink-900 font-bold">Група</label>
                 <select
                     name="group"
                     id="group"
@@ -59,7 +59,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                 </select>
             </div>
             <div className="mb-4">
-                <label htmlFor="sklad" className="block text-gray-700">Склад</label>
+                <label htmlFor="sklad" className="block text-pink-900 font-bold">Склад</label>
                 <input
                     name="sklad"
                     id="sklad"
@@ -70,7 +70,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="time" className="block text-gray-700">Час висихання</label>
+                <label htmlFor="time" className="block text-pink-900 font-bold">Час висихання</label>
                 <input
                     name="time"
                     id="time"
@@ -81,7 +81,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="vutratu" className="block text-gray-700">Витрати</label>
+                <label htmlFor="vutratu" className="block text-pink-900 font-bold">Витрати</label>
                 <input
                     name="vutratu"
                     id="vutratu"
@@ -92,7 +92,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="solvent" className="block text-gray-700">Розчинник</label>
+                <label htmlFor="solvent" className="block text-pink-900 font-bold">Розчинник</label>
                 <input
                     name="solvent"
                     id="solvent"
@@ -103,7 +103,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="vudurobit" className="block text-gray-700">Види робіт</label>
+                <label htmlFor="vudurobit" className="block text-pink-900 font-bold">Види робіт</label>
                 <input
                     name="vudurobit"
                     id="vudurobit"
@@ -113,7 +113,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="urlimage" className="block text-gray-700">File name for Image</label>
+                <label htmlFor="urlimage" className="block text-pink-900 font-bold">File name for Image</label>
                 <input
                     name="urlimage"
                     disabled
@@ -126,7 +126,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
 
             {/*------------------*/}
             <div className="mb-4">
-                <label htmlFor="vlastuvosti" className="block text-gray-700">Властивості</label>
+                <label htmlFor="vlastuvosti" className="block text-pink-900 font-bold">Властивості</label>
                 <textarea
                     name="vlastuvosti"
                     id="vlastuvosti"
@@ -138,7 +138,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="nanesennya" className="block text-gray-700">Нанесення</label>
+                <label htmlFor="nanesennya" className="block text-pink-900 font-bold">Нанесення</label>
                 <textarea
                     name="nanesennya"
                     id="nanesennya"
@@ -150,7 +150,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="pidgotovka" className="block text-gray-700">Підготовка</label>
+                <label htmlFor="pidgotovka" className="block text-pink-900 font-bold">Підготовка</label>
                 <textarea
                     name="pidgotovka"
                     id="pidgotovka"
@@ -163,7 +163,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="buyurl" className="block text-gray-700">URL на PROM UA</label>
+                <label htmlFor="buyurl" className="block text-pink-900 font-bold">URL на PROM UA</label>
                 <input
                     name="buyurl"
                     id="buyurl"
@@ -172,7 +172,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                     className="mt-1 p-2 w-full border rounded"
                 />
             </div>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
+            <button type="submit" className="block px-4 py-2 bg-blue-600 text-white rounded">
                 Submit
             </button>
         </form>
