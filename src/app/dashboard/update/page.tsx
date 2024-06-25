@@ -38,6 +38,9 @@ export default function Home() {
     }
     return (
         <section className="p-16 h-screen relative">
+            <button type="submit" className="hidden px-4 py-2 bg-blue-600 text-white rounded">
+                Submit
+            </button>
             {isSuccess && <div
                 className={'z-10 top-0 left-0 fixed w-screen h-screen flex items-center justify-center bg-black opacity-60 '}>
                 <div className={'w-[250px] h-[100px] bg-amber-50 flex justify-center items-center border-2'}>
@@ -50,7 +53,7 @@ export default function Home() {
                     </button>
                 </div>
             </div>}
-            <div className={'flex'}>
+            <div className={'flex border-gray-500'}>
                 {group.map(el => (
                     <div className={'p-2 cursor-pointer bg-amber-50'} onClick={() => {
                         setItemsByGroup(items.filter(item => item.group === el))

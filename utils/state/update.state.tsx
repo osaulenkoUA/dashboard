@@ -16,6 +16,7 @@ export interface IFeature{
     weight:string;
     price:string;
     _id:string;
+    isNew?:boolean;
 }
 
 export class Item {
@@ -34,7 +35,6 @@ export class Item {
     urlimage: string
     buyurl: string
     matchurl: string
-    __v: number
     features:  IFeature[]
 
     constructor(item: Partial<ItemProduct> = {}) {
@@ -53,8 +53,11 @@ export class Item {
         this.urlimage = item['urlimage']
         this.buyurl = item['buyurl']
         this.matchurl = item['matchurl']
-        this.__v = item['__v']
-        this.features = item['features']
+        this.features = item['features']?.map((el: IFeature)=>({
+            price:el.price,
+            weight:el.weight,
+            ...(el.isNew?{}:{_id:el._id})
+        }))
     }
 }
 
@@ -95,7 +98,7 @@ export const useUpdateStore = create(
                     const response: AxiosResponse<ApiResponse> = await axios({
                         method: 'put',
                         url: 'https://himdecor-back-new.vercel.app/product/update',
-                        data,
+                        data:new Item(data)
                     });
                     set({isLoading: false})
                     if (response.data?.success) {
