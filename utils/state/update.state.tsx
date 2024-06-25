@@ -12,6 +12,12 @@ interface ItemProduct {
     [key: string]: any;
 }
 
+export interface IFeature{
+    weight:string;
+    price:string;
+    _id:string;
+}
+
 export class Item {
     _id: string
     group: string
@@ -29,7 +35,7 @@ export class Item {
     buyurl: string
     matchurl: string
     __v: number
-    features: []
+    features: [IFeature]
 
     constructor(item: Partial<ItemProduct> = {}) {
         this._id = item['_id']
@@ -67,7 +73,7 @@ type UpdateState = {
 
 export const useUpdateStore = create(
     devtools(
-        subscribeWithSelector<UpdateState>((set, getState) => ({
+        subscribeWithSelector<UpdateState>((set) => ({
             items: [],
             group: [],
             isSuccess: '',

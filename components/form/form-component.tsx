@@ -1,13 +1,30 @@
-import {Item, useUpdateStore} from "@/utils/state/update.state";
+import {IFeature, Item, useUpdateStore} from "@/utils/state/update.state";
 
 interface IProps {
     localItem: Item;
-    setLocalItem: (item: Item) => void;
+    setLocalItem: (item: {
+        vudurobit: string;
+        buyurl: string;
+        vlastuvosti: string;
+        sklad: string;
+        features: ({ [p: number]: any } | IFeature)[];
+        pidgotovka: string;
+        nanesennya: string;
+        __v: number;
+        name: string;
+        matchurl: string;
+        urlimage: string;
+        solvent: string;
+        _id: string;
+        time: string;
+        vutratu: string;
+        group: string;
+        fasovka: string
+    }) => void;
     submit: (item:Partial<Item>) => void;
 }
 
 export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
-
 
     const group = useUpdateStore((state) => state.group)
 
@@ -16,17 +33,24 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
         event.preventDefault();
         const data = new FormData(event.target);
         const formObject = Object.fromEntries(data.entries());
-        submit(formObject)
+        const payload={...formObject,features:localItem.features}
+        submit(payload)
     };
 
-    const handleChange = (event: any) => {
+    const handleChange = (event: any,id?:string) => {
         const {name, value} = event.target;
+        if (id && (name==='price' ||name==='weight')){
+            setLocalItem({
+                ...localItem,
+                features:localItem.features.map(el=>el._id===id?{...el,[name]:value}:el)??[]
+            });
+            return;
+        }
         setLocalItem({
             ...localItem,
             [name]: value
         });
     };
-
 
     return (
         <form onSubmit={handleSubmit} className={"bg-white rounded-lg shadow-md p-4 block mt-8"}>
@@ -57,6 +81,35 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                         <option key={category} value={category}>{category}</option>
                     ))}
                 </select>
+            </div>
+            <div>
+                {localItem.features.map(item=> (<div key={item.weight} className={'flex'}>
+
+
+                    <label className={"pr-2 w-24 block text-pink-900 font-bold"}>
+                        Вага:
+                        <input
+                            type="text"
+                            name="weight"
+                            className="mt-1 p-2 w-24 border rounded"
+                            value={item.weight}
+                            onChange={(e)=>handleChange(e,item._id)}
+                        />
+                    </label>
+
+
+                    <label className={"block w-24 text-pink-900 font-bold"}>
+                        Ціна:
+                        <input
+                            type="text"
+                            name="price"
+                            className="mt-1 p-2 w-24 border rounded"
+                            value={item.price}
+                            onChange={(e)=>handleChange(e,item._id)}
+                        />
+                    </label>
+
+                </div>))}
             </div>
             <div className="mb-4">
                 <label htmlFor="sklad" className="block text-pink-900 font-bold">Склад</label>
