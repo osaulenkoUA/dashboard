@@ -72,7 +72,9 @@ export default function Home() {
             ))}
 
             {itemForUpdate._id &&
-                <FormComponent localItem={localItem} setLocalItem={setLocalItem} submit={onHandleSubmit}/>}
+                <FormComponent localItem={localItem}
+                               setLocalItem={setLocalItem}
+                               submit={onHandleSubmit}/>}
             {isLoading && <div
                 className={'fixed top-0 left-0 w-screen h-screen bg-gray-300 opacity-60 flex justify-center items-center '}>
                 <ClipLoader

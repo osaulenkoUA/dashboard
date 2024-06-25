@@ -35,7 +35,7 @@ export class Item {
     buyurl: string
     matchurl: string
     __v: number
-    features: [IFeature]
+    features:  IFeature[]
 
     constructor(item: Partial<ItemProduct> = {}) {
         this._id = item['_id']

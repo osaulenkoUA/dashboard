@@ -2,26 +2,26 @@ import {IFeature, Item, useUpdateStore} from "@/utils/state/update.state";
 
 interface IProps {
     localItem: Item;
-    setLocalItem: (item: {
-        vudurobit: string;
-        buyurl: string;
-        vlastuvosti: string;
-        sklad: string;
-        features: ({ [p: number]: any } | IFeature)[];
-        pidgotovka: string;
-        nanesennya: string;
-        __v: number;
-        name: string;
-        matchurl: string;
-        urlimage: string;
-        solvent: string;
-        _id: string;
-        time: string;
-        vutratu: string;
-        group: string;
-        fasovka: string
+    setLocalItem: (item: Item) => void;
+    submit: (item: {
+        vudurobit?: string;
+        buyurl?: string;
+        vlastuvosti?: string;
+        sklad?: string;
+        features: IFeature[];
+        pidgotovka?: string;
+        nanesennya?: string;
+        __v?: number;
+        name?: string;
+        matchurl?: string;
+        urlimage?: string;
+        solvent?: string;
+        _id?: string;
+        time?: string;
+        vutratu?: string;
+        group?: string;
+        fasovka?: string
     }) => void;
-    submit: (item:Partial<Item>) => void;
 }
 
 export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
