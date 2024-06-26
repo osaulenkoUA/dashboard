@@ -1,5 +1,5 @@
 import {IFeature, Item, useUpdateStore} from "@/utils/state/update.state";
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 
 interface IProps {
     localItem: Item;
@@ -51,25 +51,24 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
         const data = new FormData(event.target);
         const formObject = Object.fromEntries(data.entries());
         const payload = {...formObject, features: localItem.features}
-        // const foo = new Item(payload)
-        // console.log(foo)
         submit(payload)
     };
 
     const handleChange = (event: any, id?: string) => {
         const {name, value} = event.target;
-        if (id && (name === 'price' || name === 'weight')) {
-            setLocalItem((prevState:Item) => ({
+        if (id && (name === 'weight' || name === 'price')) {
+            setLocalItem((prevState: Item) => ({
                 ...prevState,
                 features: prevState.features.map(el => el._id === id ? {...el, [name]: value} : el) ?? []
             }));
-            return;
-        }
-        setLocalItem((prevState) => ({
-            ...prevState,
-            [name]: value
-        }));
+
+        } else
+            setLocalItem((prevState) => ({
+                ...prevState,
+                [name]: value
+            }));
     };
+
 
     const onHandleDeleteFeature = (id: string) => {
         const filteredItem = localItem.features.filter(el => el._id !== id)
@@ -84,10 +83,11 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
             ...prevState,
             features: [
                 ...prevState.features,
-                { _id: id, price: '', weight: '',isNew:true },
+                {_id: id, price: '', weight: '', isNew: true},
             ],
         }));
     }
+    console.log('1')
     return (
         <form onSubmit={handleSubmit} className={"bg-white rounded-lg shadow-md p-4 block mt-8"}>
             <div className="mb-4">
@@ -118,45 +118,40 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
                     ))}
                 </select>
             </div>
-            <div>
-                <p className={'text-pink-900 text-2xl'}>Характеристика: Вага-Ціна</p>
-                {localItem.features.map(item => (<div key={item.weight} className={'flex gap-x-2 items-end'}>
 
-
-                    <label className={"pr-2 w-24 block text-pink-900 font-bold"}>
-                        Вага:
-                        <input
-                            type="text"
-                            name="weight"
-                            className="mt-1 p-2 w-24 border rounded"
-                            value={item.weight}
-                            onChange={(e) => handleChange(e, item._id)}
-                        />
-                    </label>
-
-
-                    <label className={"block w-24 text-pink-900 font-bold"}>
-                        Ціна:
-                        <input
-                            type="text"
-                            name="price"
-                            className="mt-1 p-2 w-24 border rounded"
-                            value={item.price}
-                            onChange={(e) => handleChange(e, item._id)}
-                        />
-                    </label>
-                    <button type={'button'} onClick={() => {
-                        onHandleDeleteFeature(item._id)
-                    }} className={'block px-4 h-8 bg-red-700 text-white rounded mb-1'}>DELETE
-                    </button>
-
-                </div>))}
+            <p className={'text-pink-900 text-2xl'}>Характеристика: Вага-Ціна</p>
+            {localItem.features.map((item, idx) => (<div key={item._id ?? idx} className={'flex gap-x-2 items-end'}>
+                <label className={"pr-2 w-24 block text-pink-900 font-bold"}>
+                    Вага:
+                    <input
+                        type="text"
+                        name="weight"
+                        className="mt-1 p-2 w-24 border rounded"
+                        value={item.weight}
+                        onChange={(e) => handleChange(e, item._id)}
+                    />
+                </label>
+                <label className={"block w-24 text-pink-900 font-bold"}>
+                    Ціна:
+                    <input
+                        type="text"
+                        name="price"
+                        className="mt-1 p-2 w-24 border rounded"
+                        value={item.price}
+                        onChange={(e) => handleChange(e, item._id)}
+                    />
+                </label>
                 <button type={'button'} onClick={() => {
-                    onHandleAddFeature(uuidv4())
-                }} className={'block px-4 h-8 bg-green-600 text-white rounded mb-1'}>Добавити +
+                    onHandleDeleteFeature(item._id)
+                }} className={'block px-4 h-8 bg-red-700 text-white rounded mb-1'}>DELETE
                 </button>
+            </div>))}
+            <button type={'button'} onClick={() => {
+                onHandleAddFeature(uuidv4())
+            }} className={'block px-4 h-8 bg-green-600 text-white rounded mb-1'}>Добавити +
+            </button>
 
-            </div>
+
             <div className="mb-4">
                 <label htmlFor="sklad" className="block text-pink-900 font-bold">Склад</label>
                 <input

@@ -37,10 +37,7 @@ export default function Home() {
 
     }
     return (
-        <section className="p-16 h-screen relative">
-            <button type="submit" className="hidden px-4 py-2 bg-blue-600 text-white rounded">
-                Submit
-            </button>
+        <section className="h-screen relative">
             {isSuccess && <div
                 className={'z-10 top-0 left-0 fixed w-screen h-screen flex items-center justify-center bg-black opacity-60 '}>
                 <div className={'w-[250px] h-[100px] bg-amber-50 flex justify-center items-center border-2'}>
@@ -53,26 +50,42 @@ export default function Home() {
                     </button>
                 </div>
             </div>}
-            <div className={'flex border-gray-500'}>
+            <div className="w-64 bg-gray-900 text-white p-4">
                 {group.map(el => (
-                    <div className={'p-2 cursor-pointer bg-amber-50'} onClick={() => {
-                        setItemsByGroup(items.filter(item => item.group === el))
-                        setItemForUpdate(new Item({}))
-                        setLocalItem(new Item({}))
-                    }} key={el}>
-                        {el}
+                    <div key={el} className="mb-4">
+                        <div
+                            className="p-3 mb-2 cursor-pointer bg-gray-700 text-white hover:bg-gray-600 hover:text-white rounded-lg transition-colors duration-200 shadow-md"
+                            onClick={() => {
+                                setItemsByGroup(items.filter(item => item.group === el));
+                                setItemForUpdate(new Item({}));
+                                setLocalItem(new Item({}));
+                            }}
+                        >
+                            {el}
+                        </div>
+                        {el === itemsByGroup[0]?.group && (
+                            <div className="ml-4 mt-2">
+                                {itemsByGroup.map(subEl => (
+                                    <p
+                                        key={subEl._id}
+                                        onClick={() => {
+                                            setLocalItem(subEl);
+                                            setItemForUpdate(subEl);
+                                        }}
+                                        className={`cursor-pointer pb-2 pl-2 pr-2 rounded-md transition-all duration-200 ${
+                                            subEl.name === localItem.name
+                                                ? 'text-pink-500 bg-gray-800'
+                                                : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                                        }`}
+                                    >
+                                        {subEl.name}
+                                    </p>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
-
-            {itemsByGroup.map(el => (
-                <p onClick={() => {
-                    setLocalItem(el)
-                    setItemForUpdate(el)
-                }} className={classNames('cursor-pointer pb-2', {
-                    ['text-pink-900 text-[20px] font-bold']: el.name === localItem.name
-                })} key={el._id}>{el.name}</p>
-            ))}
 
             {itemForUpdate._id &&
                 <FormComponent localItem={localItem}
