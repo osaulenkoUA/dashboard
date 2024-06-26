@@ -143,12 +143,12 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
                 </label>
                 <button type={'button'} onClick={() => {
                     onHandleDeleteFeature(item._id)
-                }} className={'block px-4 h-8 bg-red-700 text-white rounded mb-1'}>DELETE
+                }} className={'block px-4 h-8 bg-red text-white rounded mb-1'}>DELETE
                 </button>
             </div>))}
             <button type={'button'} onClick={() => {
                 onHandleAddFeature(uuidv4())
-            }} className={'block px-4 h-8 bg-green-600 text-white rounded mb-1'}>Добавити +
+            }} className={'block px-4 h-8 bg-green text-white rounded mb-1 mt-2'}>Добавити +
             </button>
 
 
@@ -160,7 +160,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
                     value={localItem.sklad}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                 />
             </div>
             <div className="mb-4">
@@ -171,7 +171,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
                     value={localItem.time}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                 />
             </div>
             <div className="mb-4">
@@ -182,7 +182,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
                     value={localItem.vutratu}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                 />
             </div>
             <div className="mb-4">
@@ -193,7 +193,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
                     value={localItem.solvent}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                 />
             </div>
             <div className="mb-4">
@@ -227,7 +227,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
                     value={localItem.vlastuvosti}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                     rows={5}
                 />
             </div>
@@ -239,7 +239,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
                     value={localItem.nanesennya}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                     rows={5}
                 />
             </div>
@@ -251,7 +251,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
                     value={localItem.pidgotovka}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                     rows={5}
 
                 />
@@ -266,9 +266,11 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
                     className="mt-1 p-2 w-full border rounded"
                 />
             </div>
-            <button type="submit" className="block px-4 py-2 bg-blue-600 text-white rounded">
-                Submit
-            </button>
+            <div className={'flex justify-center items-center w-full'}>
+                <button type="submit" className="block px-4 py-2 bg-blue-600 text-white rounded">
+                    Submit
+                </button>
+            </div>
         </form>
 
 
