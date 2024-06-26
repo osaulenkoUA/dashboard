@@ -1,13 +1,47 @@
-import {Item, useUpdateStore} from "@/utils/state/update.state";
+import {IFeature, Item, useUpdateStore} from "@/utils/state/update.state";
+import {v4 as uuidv4} from 'uuid';
 
 interface IProps {
     localItem: Item;
-    setLocalItem: (item: Item) => void;
-    submit: (item:Partial<Item>) => void;
+    setLocalItem: (item: (prevState: Item) => {
+        vudurobit: string;
+        buyurl: string;
+        vlastuvosti: string;
+        sklad: string;
+        features: IFeature[];
+        pidgotovka: string;
+        nanesennya: string;
+        name: string;
+        matchurl: string;
+        urlimage: string;
+        solvent: string;
+        _id: string;
+        time: string;
+        vutratu: string;
+        group: string;
+        fasovka: string
+    }) => void;
+    submit: (item: {
+        vudurobit?: string;
+        buyurl?: string;
+        vlastuvosti?: string;
+        sklad?: string;
+        features: IFeature[];
+        pidgotovka?: string;
+        nanesennya?: string;
+        name?: string;
+        matchurl?: string;
+        urlimage?: string;
+        solvent?: string;
+        _id?: string;
+        time?: string;
+        vutratu?: string;
+        group?: string;
+        fasovka?: string
+    }) => void;
 }
 
-export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
-
+export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
 
     const group = useUpdateStore((state) => state.group)
 
@@ -16,18 +50,44 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
         event.preventDefault();
         const data = new FormData(event.target);
         const formObject = Object.fromEntries(data.entries());
-        submit(formObject)
+        const payload = {...formObject, features: localItem.features}
+        submit(payload)
     };
 
-    const handleChange = (event: any) => {
+    const handleChange = (event: any, id?: string) => {
         const {name, value} = event.target;
-        setLocalItem({
-            ...localItem,
-            [name]: value
-        });
+        if (id && (name === 'weight' || name === 'price')) {
+            setLocalItem((prevState: Item) => ({
+                ...prevState,
+                features: prevState.features.map(el => el._id === id ? {...el, [name]: value} : el) ?? []
+            }));
+
+        } else
+            setLocalItem((prevState) => ({
+                ...prevState,
+                [name]: value
+            }));
     };
 
 
+    const onHandleDeleteFeature = (id: string) => {
+        const filteredItem = localItem.features.filter(el => el._id !== id)
+        setLocalItem(prevState => ({
+            ...prevState,
+            features: filteredItem
+        }));
+    }
+
+    const onHandleAddFeature = (id: string) => {
+        setLocalItem((prevState) => ({
+            ...prevState,
+            features: [
+                ...prevState.features,
+                {_id: id, price: '', weight: '', isNew: true},
+            ],
+        }));
+    }
+    console.log('1')
     return (
         <form onSubmit={handleSubmit} className={"bg-white rounded-lg shadow-md p-4 block mt-8"}>
             <div className="mb-4">
@@ -49,7 +109,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                     id="group"
                     value={localItem.group}
                     onChange={handleChange}
-                    className="mt-1 p-2 w-full border rounded"
+                    className="mt-1 p-2 w-64 border border-gray-500 rounded"
                     required
                 >
                     <option value="" disabled>Select a category</option>
@@ -58,6 +118,40 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                     ))}
                 </select>
             </div>
+
+            <p className={'text-pink-900 text-2xl'}>Характеристика: Вага-Ціна</p>
+            {localItem.features.map((item, idx) => (<div key={item._id ?? idx} className={'flex gap-x-2 items-end'}>
+                <label className={"pr-2 w-24 block text-pink-900 font-bold"}>
+                    Вага:
+                    <input
+                        type="text"
+                        name="weight"
+                        className="mt-1 p-2 w-24 border rounded"
+                        value={item.weight}
+                        onChange={(e) => handleChange(e, item._id)}
+                    />
+                </label>
+                <label className={"block w-24 text-pink-900 font-bold"}>
+                    Ціна:
+                    <input
+                        type="text"
+                        name="price"
+                        className="mt-1 p-2 w-24 border rounded"
+                        value={item.price}
+                        onChange={(e) => handleChange(e, item._id)}
+                    />
+                </label>
+                <button type={'button'} onClick={() => {
+                    onHandleDeleteFeature(item._id)
+                }} className={'block px-4 h-8 bg-red text-white rounded mb-1'}>DELETE
+                </button>
+            </div>))}
+            <button type={'button'} onClick={() => {
+                onHandleAddFeature(uuidv4())
+            }} className={'block px-4 h-8 bg-green text-white rounded mb-1 mt-2'}>Добавити +
+            </button>
+
+
             <div className="mb-4">
                 <label htmlFor="sklad" className="block text-pink-900 font-bold">Склад</label>
                 <input
@@ -66,7 +160,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                     value={localItem.sklad}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                 />
             </div>
             <div className="mb-4">
@@ -77,7 +171,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                     value={localItem.time}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                 />
             </div>
             <div className="mb-4">
@@ -88,7 +182,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                     value={localItem.vutratu}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                 />
             </div>
             <div className="mb-4">
@@ -99,7 +193,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                     value={localItem.solvent}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                 />
             </div>
             <div className="mb-4">
@@ -133,7 +227,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                     value={localItem.vlastuvosti}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                     rows={5}
                 />
             </div>
@@ -145,7 +239,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                     value={localItem.nanesennya}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                     rows={5}
                 />
             </div>
@@ -157,7 +251,7 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                     value={localItem.pidgotovka}
                     onChange={handleChange}
                     className="mt-1 p-2 w-full border rounded"
-                    required
+
                     rows={5}
 
                 />
@@ -172,9 +266,11 @@ export const FormComponent = ({localItem, setLocalItem, submit}:IProps) => {
                     className="mt-1 p-2 w-full border rounded"
                 />
             </div>
-            <button type="submit" className="block px-4 py-2 bg-blue-600 text-white rounded">
-                Submit
-            </button>
+            <div className={'flex justify-center items-center w-full'}>
+                <button type="submit" className="block px-4 py-2 bg-blue-600 text-white rounded">
+                    Submit
+                </button>
+            </div>
         </form>
 
 

@@ -5,7 +5,6 @@ import {Item, useUpdateStore} from "@/utils/state/update.state";
 import {useEffect, useState} from "react";
 import {FormComponent} from "@/components/form/form-component";
 import compareObjects from "@/utils/helpers/compareObjects";
-import classNames from "classnames";
 
 
 export default function Home() {
@@ -37,12 +36,12 @@ export default function Home() {
 
     }
     return (
-        <section className="p-16 h-screen relative">
-            <button type="submit" className="hidden px-4 py-2 bg-blue-600 text-white rounded">
-                Submit
-            </button>
+        <section className="h-screen relative">
+            <h1 className="text-center text-4xl font-extrabold text-gray-900 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent mb-6 shadow-lg">
+                Update Product
+            </h1>
             {isSuccess && <div
-                className={'z-10 top-0 left-0 fixed w-screen h-screen flex items-center justify-center bg-black opacity-60 '}>
+                className={'z-10 top-0 left-0 fixed w-screen h-screen flex items-center justify-center bg-blackRBGA'}>
                 <div className={'w-[250px] h-[100px] bg-amber-50 flex justify-center items-center border-2'}>
 
                     <button onClick={() => {
@@ -53,31 +52,8 @@ export default function Home() {
                     </button>
                 </div>
             </div>}
-            <div className={'flex'}>
-                {group.map(el => (
-                    <div className={'p-2 cursor-pointer bg-amber-50'} onClick={() => {
-                        setItemsByGroup(items.filter(item => item.group === el))
-                        setItemForUpdate(new Item({}))
-                        setLocalItem(new Item({}))
-                    }} key={el}>
-                        {el}
-                    </div>
-                ))}
-            </div>
-
-            {itemsByGroup.map(el => (
-                <p onClick={() => {
-                    setLocalItem(el)
-                    setItemForUpdate(el)
-                }} className={classNames('cursor-pointer pb-2', {
-                    ['text-pink-900 text-[20px] font-bold']: el.name === localItem.name
-                })} key={el._id}>{el.name}</p>
-            ))}
-
-            {itemForUpdate._id &&
-                <FormComponent localItem={localItem} setLocalItem={setLocalItem} submit={onHandleSubmit}/>}
             {isLoading && <div
-                className={'fixed top-0 left-0 w-screen h-screen bg-gray-300 opacity-60 flex justify-center items-center '}>
+                className={'fixed top-0 left-0 w-screen h-screen bg-blackRBGA flex justify-center items-center '}>
                 <ClipLoader
                     color={'#ff0000'}
                     loading={isLoading}
@@ -87,8 +63,52 @@ export default function Home() {
                 />
             </div>
             }
+            <div  className={'grid grid-cols-max1fr'}>
+                <div className="w-64 bg-gray-900 text-white p-4">
+                    {group.map(el => (
+                        <div key={el} className="mb-4">
+                            <div
+                                className="p-3 mb-2 cursor-pointer bg-gray-700 text-white hover:bg-gray-600 hover:text-white rounded-lg transition-colors duration-200 shadow-md"
+                                onClick={() => {
+                                    setItemsByGroup(items.filter(item => item.group === el));
+                                    setItemForUpdate(new Item({}));
+                                    setLocalItem(new Item({}));
+                                }}
+                            >
+                                {el}
+                            </div>
+                            {el === itemsByGroup[0]?.group && (
+                                <div className="ml-4 mt-2">
+                                    {itemsByGroup.map(subEl => (
+                                        <p
+                                            key={subEl._id}
+                                            onClick={() => {
+                                                setLocalItem(subEl);
+                                                setItemForUpdate(subEl);
+                                                window.scrollTo({top: 0, behavior: 'smooth'});
+                                            }}
+                                            className={`cursor-pointer pb-2 pl-2 pr-2 rounded-md transition-all duration-200 ${
+                                                subEl.name === localItem.name
+                                                    ? 'text-pink-500 bg-gray-800'
+                                                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                                            }`}
+                                        >
+                                            {subEl.name}
+                                        </p>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                {itemForUpdate._id &&
+                    <FormComponent localItem={localItem}
+                                   setLocalItem={setLocalItem}
+                                   submit={onHandleSubmit}/>}
 
 
+            </div>
         </section>
     );
 }
