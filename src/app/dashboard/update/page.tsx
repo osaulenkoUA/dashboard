@@ -5,6 +5,7 @@ import {Item, useUpdateStore} from "@/utils/state/update.state";
 import {useEffect, useState} from "react";
 import {FormComponent} from "@/components/form/form-component";
 import compareObjects from "@/utils/helpers/compareObjects";
+import {UploadForm} from "@/components/form/upload";
 
 
 export default function Home() {
@@ -63,7 +64,7 @@ export default function Home() {
                 />
             </div>
             }
-            <div  className={'grid grid-cols-max1fr'}>
+            <div className={'grid grid-cols-max1fr'}>
                 <div className="w-64 bg-gray-900 text-white p-4">
                     {group.map(el => (
                         <div key={el} className="mb-4">
@@ -103,9 +104,12 @@ export default function Home() {
                 </div>
 
                 {itemForUpdate._id &&
-                    <FormComponent localItem={localItem}
-                                   setLocalItem={setLocalItem}
-                                   submit={onHandleSubmit}/>}
+                    <div>
+                        <UploadForm fileName={itemForUpdate._id}/>
+                        <FormComponent localItem={localItem}
+                                       setLocalItem={setLocalItem}
+                                       submit={onHandleSubmit}/>
+                    </div>}
 
 
             </div>
