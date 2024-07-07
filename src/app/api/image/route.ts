@@ -2,7 +2,13 @@ import {NextApiResponse} from 'next';
 import Client from 'ssh2-sftp-client';
 import {NextResponse} from "next/server";
 
-// export const config = {};
+export const dynamic = 'auto'
+export const dynamicParams = true
+export const revalidate = false
+export const fetchCache = 'auto'
+export const runtime = 'nodejs'
+export const preferredRegion = 'auto'
+
 
 async function uploadFileToServer(fileBuffer: ArrayBuffer, fileName: string, targetDir: string): Promise<void> {
     const client = new Client();
