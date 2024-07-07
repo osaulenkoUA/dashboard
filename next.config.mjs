@@ -3,6 +3,8 @@ const nextConfig = {
     pageExtensions: ['ts', 'tsx', 'mdx'],
     experimental: {
         mdxRs: true,
+        webpackBuildWorker: true,
+
     },
 };
 
