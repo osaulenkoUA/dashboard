@@ -1,6 +1,8 @@
+import {NextApiResponse} from 'next';
 import Client from 'ssh2-sftp-client';
 import {NextResponse} from "next/server";
 
+// export const config = {};
 
 async function uploadFileToServer(fileBuffer: ArrayBuffer, fileName: string, targetDir: string): Promise<void> {
     const client = new Client();
@@ -23,7 +25,7 @@ async function uploadFileToServer(fileBuffer: ArrayBuffer, fileName: string, tar
 }
 
 
-export async function POST(req: Request) {
+export async function POST(req: Request, res: NextApiResponse) {
     if (req.method === 'POST') {
         try {
             const data = await req.json();
