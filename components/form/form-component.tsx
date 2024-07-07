@@ -87,7 +87,6 @@ export const FormComponent = ({localItem, setLocalItem, submit}: IProps) => {
             ],
         }));
     }
-    console.log('1')
     return (
         <form onSubmit={handleSubmit} className={"bg-white rounded-lg shadow-md p-4 block mt-8"}>
             <div className="mb-4">

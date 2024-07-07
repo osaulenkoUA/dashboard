@@ -4,9 +4,10 @@ import React, {ChangeEvent, FormEvent, useState} from 'react';
 import axios from "axios";
 
 interface UploadFormProps {
+    fileName:string
 }
 
-const UploadForm: React.FC<UploadFormProps> = () => {
+export const UploadForm: React.FC<UploadFormProps> = ({fileName}) => {
 
     const [file, setFile] = useState<File | null>(null);
     const [targetDir, setTargetDir] = useState<string>('/home/alex/web/himdecor/public/images/shop/');
@@ -16,6 +17,7 @@ const UploadForm: React.FC<UploadFormProps> = () => {
             setFile(e.target.files[0]);
         }
     };
+
     const handleTargetDirChange = (e: ChangeEvent<HTMLInputElement>) => {
         setTargetDir(e.target.value);
     };
@@ -28,7 +30,7 @@ const UploadForm: React.FC<UploadFormProps> = () => {
         const str = decoder.decode(fileBuffer);
         const requestBody = {
             file: str,
-            fileName: file.name,
+            fileName,
             targetDir,
         };
         try {
@@ -42,18 +44,6 @@ const UploadForm: React.FC<UploadFormProps> = () => {
             console.error('Error uploading file:', error);
         }
     };
-
-
-    const onHandleShowList = async ()=>{
-        try{
-           const list=  await axios.get('/api/getList')
-            console.log(list)
-        }
-        catch (err){
-            console.log(err)
-        }
-    }
-
 
     return (
         <div>
@@ -72,12 +62,7 @@ const UploadForm: React.FC<UploadFormProps> = () => {
                 </div>
                 <button type="submit">Upload</button>
             </form>
-
-
-            <button className={'border-gray-500 border m-8 cursor-pointer p-2'} type="button" onClick={onHandleShowList}>Show files list</button>
-
         </div>
     );
 };
 
-export default UploadForm;
