@@ -1,5 +1,5 @@
 import {NextResponse} from "next/server";
-import Client from "ssh2-sftp-client";
+let Client = require('ssh2-sftp-client');
 
 async function getlistFilesFromServer(): Promise<Array<any>> {
     const sftp = new Client();
@@ -24,7 +24,7 @@ async function getlistFilesFromServer(): Promise<Array<any>> {
 export async function GET() {
     try {
         const list = await getlistFilesFromServer();
-        return NextResponse.json({message: 'File uploaded successfully', data: list}, {status: 200});
+        return NextResponse.json({message: 'File uploaded successfully', data: 'list'}, {status: 200});
 
     } catch (err) {
         return NextResponse.json({error: 'Error getting list'}, {status: 500});
