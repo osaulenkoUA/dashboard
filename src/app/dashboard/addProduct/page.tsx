@@ -9,7 +9,7 @@ interface UploadFormProps {
 const UploadForm: React.FC<UploadFormProps> = () => {
 
     const [file, setFile] = useState<File | null>(null);
-    const [targetDir, setTargetDir] = useState<string>('/home/alex/web/himdecor/public/images/shop/');
+    const [targetDir, setTargetDir] = useState<string>('/home/alex/web/');
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
