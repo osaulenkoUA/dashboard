@@ -6,6 +6,7 @@ import axios from "axios";
 interface UploadFormProps {
 }
 
+
 const UploadForm: React.FC<UploadFormProps> = () => {
 
     const [file, setFile] = useState<File | null>(null);
@@ -32,7 +33,7 @@ const UploadForm: React.FC<UploadFormProps> = () => {
             targetDir,
         };
         try {
-            const response = await axios.post('/api/image', requestBody, {
+            const response = await axios.post('https://himdecor-back-new.vercel.app/file/uploadFile', requestBody, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
