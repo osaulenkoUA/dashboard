@@ -2,14 +2,15 @@
 
 import ClipLoader from 'react-spinners/ClipLoader';
 import {Item, useUpdateStore} from '@/utils/state/update.state';
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FormComponent} from '@/components/form/form-component';
 import compareObjects from '@/utils/helpers/compareObjects';
 import {UploadForm} from '@/components/form/upload';
 import {DeleteItemById} from '@/components/form/delete-item-byId';
+import {ModalComponent} from "@/components/modal-container/modal-component";
 
 export default function Home() {
-    const [itemsByGroup, setItemsByGroup] = useState<Item[]>([]);
+    const [groupName, setGroupName] = useState<string>('');
     const [localItem, setLocalItem] = useState<Item>(new Item({}));
 
     const items = useUpdateStore((state) => state.items);
@@ -32,33 +33,21 @@ export default function Home() {
         const itemOnlyWithChangedFields = compareObjects(data, itemForUpdate);
         updateField({...itemOnlyWithChangedFields, _id: itemForUpdate._id});
     };
+
     return (
         <section className="h-screen relative">
             <h1 className="text-center text-4xl font-extrabold text-gray-900 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent mb-6 shadow-lg">
                 Update Product
             </h1>
-            {isSuccess && (
-                <div
-                    className={
-                        'z-10 top-0 left-0 fixed w-screen h-screen flex items-center justify-center bg-blackRBGA'
+            {isSuccess && (<ModalComponent text={''} actions={[{
+                    type: 'main',
+                    text: isSuccess === 'updated' ? 'Updated Product' : 'Error',
+                    action: () => {
+                        triggerSuccess('');
+                        setItemForUpdate(new Item({}))
                     }
-                >
-                    <div
-                        className={
-                            'w-[250px] h-[100px] bg-amber-50 flex justify-center items-center border-2'
-                        }
-                    >
-                        <button
-                            onClick={() => {
-                                triggerSuccess('');
-                                setItemForUpdate(new Item({}));
-                            }}
-                            className={'p-2 bg-emerald-600 text-white border-0'}
-                        >
-                            {isSuccess === 'updated' ? 'Updated Product' : 'Error'}
-                        </button>
-                    </div>
-                </div>
+                }]}/>
+
             )}
             {isLoading && (
                 <div
@@ -82,16 +71,16 @@ export default function Home() {
                             <div
                                 className="p-3 mb-2 cursor-pointer bg-gray-700 text-white hover:bg-gray-600 hover:text-white rounded-lg transition-colors duration-200 shadow-md"
                                 onClick={() => {
-                                    setItemsByGroup(items.filter((item) => item.group === el));
+                                    setGroupName(el);
                                     setItemForUpdate(new Item({}));
                                     setLocalItem(new Item({}));
                                 }}
                             >
                                 {el}
                             </div>
-                            {el === itemsByGroup[0]?.group && (
+                            {el === groupName && (
                                 <div className="ml-4 mt-2">
-                                    {itemsByGroup.map((subEl) => (
+                                    {items.filter(item => item.group === groupName).map((subEl) => (
                                         <p
                                             key={subEl._id}
                                             onClick={() => {
@@ -116,8 +105,8 @@ export default function Home() {
 
                 {itemForUpdate._id && (
                     <div>
-                        <UploadForm fileName={itemForUpdate._id}/>
                         <DeleteItemById itemId={itemForUpdate._id}/>
+                        <UploadForm fileName={itemForUpdate._id}/>
                         <FormComponent
                             localItem={localItem}
                             setLocalItem={setLocalItem}
