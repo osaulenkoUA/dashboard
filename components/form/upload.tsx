@@ -1,94 +1,108 @@
-'use client';
+"use client";
 
-import React, { ChangeEvent, FormEvent, useState } from 'react';
-import axios from 'axios';
-import Resizer from 'react-image-file-resizer';
+import React, {ChangeEvent, FormEvent, useState} from "react";
+import axios from "axios";
+import {useUpdateStore} from "@/utils/state/update.state";
 
 interface UploadFormProps {
-  fileName: string;
+    fileName: string;
+    targetDir: string;
 }
 
-export const UploadForm: React.FC<UploadFormProps> = ({ fileName }) => {
-  const [file, setFile] = useState<any>(null);
-  const [targetDir, setTargetDir] = useState<string>(
-    '/home/alex/web/himdecor/public/images/shop/'
-  );
+export const UploadForm: React.FC<UploadFormProps> = ({fileName, targetDir}) => {
+    const [file, setFile] = useState<File | null>(null);
 
-  const resizeFile = (file: Blob) =>
-    new Promise((resolve) => {
-      Resizer.imageFileResizer(
-        file,
-        300,
-        300,
-        'JPEG',
-        80,
-        0,
-        (uri) => {
-          resolve(uri);
-        },
-        'file'
-      );
-    });
+    const itemForUpdate = useUpdateStore((state) => state.itemForUpdate);
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
-  };
+    console.log(fileName)
+    console.log(itemForUpdate)
 
-  const handleTargetDirChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTargetDir(e.target.value);
-  };
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!file || !targetDir) return;
-    const image = (await resizeFile(file)) as Blob;
-    const fileBuffer = await image.arrayBuffer();
-    const decoder = new TextDecoder();
-    const str = decoder.decode(fileBuffer);
-    const requestBody = {
-      file: str,
-      fileName: file.name,
-      targetDir,
-    };
-    try {
-      const response = await axios.post(
-        'https://himdecor-back-new.vercel.app/file/uploadFile',
-        requestBody,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+    // const resizeFile = (file: Blob) =>
+    //     new Promise((resolve) => {
+    //         Resizer.imageFileResizer(
+    //             file,
+    //             300,
+    //             300,
+    //             "JPEG",
+    //             80,
+    //             0,
+    //             (uri) => {
+    //                 resolve(uri);
+    //             },
+    //             "file",
+    //         );
+    //     });
+
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setFile(e.target.files[0]);
         }
-      );
-      console.log(response);
-    } catch (error) {
-      console.error('Error uploading file:', error);
-    }
-  };
+    };
+    const handleDeleteFile = async () => {
+        // const image = (await resizeFile(file)) as Blob;
+        const requestBody = {
+            fileName: itemForUpdate.images[0].name,
+            targetDir
+        };
+        try {
+            const response = await axios.post(
+                "https://himdecor-back-new.vercel.app/file/deleteFile",
+                requestBody,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                },
+            );
+            console.log(response);
+        } catch (error) {
+            console.error("Error uploading file:", error);
+        }
+    };
 
-  return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    const onHandleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        if (!file || !targetDir) return;
+        console.log(file)
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('fileName', file.name);
+        formData.append('targetDir', targetDir);
+
+        try {
+            const response = await axios.post(
+                "https://himdecor-back-new.vercel.app/file/uploadFile",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                },
+            );
+            console.log(response);
+        } catch (error) {
+            console.error("Error uploading file:", error);
+        }
+    };
+
+    return (
         <div>
-          <label>
-            Select File:
-            <input type="file" onChange={handleFileChange} />
-          </label>
+            <form onSubmit={onHandleSubmit}>
+                <div>
+                    <label>
+                        Select File:
+                        <input type="file" onChange={handleFileChange}/>
+                    </label>
+                </div>
+                <button type="submit">Upload</button>
+            </form>
+            {!file && itemForUpdate.images.map(el => <img
+                src={file ? URL.createObjectURL(file) : el.url}
+                alt="Resized"/>)
+            }
+            <div onClick={handleDeleteFile}
+                 className={'w-32 h-8 border-2 border-gray-500 bg-red cursor-pointer text-white'}>DELETE Image
+            </div>
         </div>
-        <div>
-          <label>
-            Target Directory:
-            <input
-              type="text"
-              value={targetDir}
-              onChange={handleTargetDirChange}
-            />
-          </label>
-        </div>
-        <button type="submit">Upload</button>
-      </form>
-      {file && <img src={URL.createObjectURL(file)} alt="Resized" />}
-    </div>
-  );
+    );
 };

@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import ClipLoader from 'react-spinners/ClipLoader';
-import {Item, useUpdateStore} from '@/utils/state/update.state';
-import React, {useEffect, useState} from 'react';
-import {FormComponent} from '@/components/form/form-component';
-import compareObjects from '@/utils/helpers/compareObjects';
-import {UploadForm} from '@/components/form/upload';
-import {DeleteItemById} from '@/components/form/delete-item-byId';
+import {DeleteItemById} from "@/components/form/delete-item-byId";
+import {FormComponent} from "@/components/form/form-component";
+import {UploadForm} from "@/components/form/upload";
 import {ModalComponent} from "@/components/modal-container/modal-component";
+import compareObjects from "@/utils/helpers/compareObjects";
+import {IImage, Item, useUpdateStore} from "@/utils/state/update.state";
+import React, {useEffect, useState} from "react";
+import ClipLoader from "react-spinners/ClipLoader";
 
 export default function Home() {
-    const [groupName, setGroupName] = useState<string>('');
+    const [groupName, setGroupName] = useState<string>("");
     const [localItem, setLocalItem] = useState<Item>(new Item({}));
 
     const items = useUpdateStore((state) => state.items);
@@ -29,9 +29,26 @@ export default function Home() {
         getAllItems();
     }, []);
 
+
+    const createImagesObj = (listName: [string]): IImage[] => {
+        return [
+            {
+                name: listName[0] + '.png',
+                url: `https://www.himdecor.ua/shares/images/products/${listName[0]}.png`,
+                isMain: true
+            }
+        ]
+    }
+
     const onHandleSubmit = (data: Partial<Item>) => {
         const itemOnlyWithChangedFields = compareObjects(data, itemForUpdate);
-        updateField({...itemOnlyWithChangedFields, _id: itemForUpdate._id});
+        const payload = {
+            ...itemOnlyWithChangedFields,
+            _id: itemForUpdate._id,
+            images: createImagesObj([itemForUpdate.urlimage])
+        }
+        console.log(payload)
+        updateField(payload);
     };
 
     return (
@@ -39,24 +56,29 @@ export default function Home() {
             <h1 className="text-center text-4xl font-extrabold text-gray-900 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent mb-6 shadow-lg">
                 Update Product
             </h1>
-            {isSuccess && (<ModalComponent text={''} actions={[{
-                    type: 'main',
-                    text: isSuccess === 'updated' ? 'Updated Product' : 'Error',
-                    action: () => {
-                        triggerSuccess('');
-                        setItemForUpdate(new Item({}))
-                    }
-                }]}/>
-
+            {isSuccess && (
+                <ModalComponent
+                    text={"Продукт оновленно"}
+                    actions={[
+                        {
+                            type: "main",
+                            text: "Ok",
+                            action: () => {
+                                triggerSuccess(false);
+                                setItemForUpdate(new Item({}));
+                            },
+                        },
+                    ]}
+                />
             )}
             {isLoading && (
                 <div
                     className={
-                        'fixed top-0 left-0 w-screen h-screen bg-blackRBGA flex justify-center items-center '
+                        "fixed top-0 left-0 w-screen h-screen bg-blackRBGA flex justify-center items-center "
                     }
                 >
                     <ClipLoader
-                        color={'#ff0000'}
+                        color={"#ff0000"}
                         loading={isLoading}
                         size={200}
                         aria-label="Loading Spinner"
@@ -64,7 +86,7 @@ export default function Home() {
                     />
                 </div>
             )}
-            <div className={'grid grid-cols-max1fr'}>
+            <div className={"grid grid-cols-max1fr"}>
                 <div className="w-64 bg-gray-900 text-white p-4">
                     {group.map((el) => (
                         <div key={el} className="mb-4">
@@ -80,23 +102,25 @@ export default function Home() {
                             </div>
                             {el === groupName && (
                                 <div className="ml-4 mt-2">
-                                    {items.filter(item => item.group === groupName).map((subEl) => (
-                                        <p
-                                            key={subEl._id}
-                                            onClick={() => {
-                                                setLocalItem(subEl);
-                                                setItemForUpdate(subEl);
-                                                window.scrollTo({top: 0, behavior: 'smooth'});
-                                            }}
-                                            className={`cursor-pointer pb-2 pl-2 pr-2 rounded-md transition-all duration-200 ${
-                                                subEl.name === localItem.name
-                                                    ? 'text-pink-500 bg-gray-800'
-                                                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
-                                            }`}
-                                        >
-                                            {subEl.name}
-                                        </p>
-                                    ))}
+                                    {items
+                                        .filter((item) => item.group === groupName)
+                                        .map((subEl) => (
+                                            <p
+                                                key={subEl._id}
+                                                onClick={() => {
+                                                    setLocalItem(subEl);
+                                                    setItemForUpdate(subEl);
+                                                    window.scrollTo({top: 0, behavior: "smooth"});
+                                                }}
+                                                className={`cursor-pointer pb-2 pl-2 pr-2 rounded-md transition-all duration-200 ${
+                                                    subEl.name === localItem.name
+                                                        ? "text-pink-500 bg-gray-800"
+                                                        : "text-gray-300 hover:text-white hover:bg-gray-700"
+                                                }`}
+                                            >
+                                                {subEl.name}
+                                            </p>
+                                        ))}
                                 </div>
                             )}
                         </div>
@@ -106,12 +130,12 @@ export default function Home() {
                 {itemForUpdate._id && (
                     <div>
                         <DeleteItemById itemId={itemForUpdate._id}/>
-                        <UploadForm fileName={itemForUpdate._id}/>
+                        <UploadForm fileName={itemForUpdate.urlimage} targetDir={'/home/alex/public/images/products'}/>
                         <FormComponent
                             localItem={localItem}
                             setLocalItem={setLocalItem}
                             submit={onHandleSubmit}
-                            subbmitButton={'Update'}
+                            subbmitButton={"Update"}
                         />
                     </div>
                 )}

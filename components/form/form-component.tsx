@@ -1,4 +1,4 @@
-import {IFeature, Item, useUpdateStore} from '@/utils/state/update.state';
+import {IFeature, IImage, Item, useUpdateStore} from '@/utils/state/update.state';
 import {v4 as uuidv4} from 'uuid';
 
 interface IProps {
@@ -22,6 +22,8 @@ interface IProps {
             vutratu: string;
             group: string;
             fasovka: string;
+            images: IImage[];
+
         }
     ) => void;
     submit: (item: {
@@ -41,6 +43,8 @@ interface IProps {
         vutratu?: string;
         group?: string;
         fasovka?: string;
+        images?: IImage[];
+
     }) => void;
 }
 

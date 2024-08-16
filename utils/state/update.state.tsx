@@ -4,7 +4,7 @@ import axios, {AxiosResponse} from 'axios';
 import {BASE_URL} from "@/utils/constants/api";
 
 interface ApiResponse {
-    success: boolean;
+    isSuccessful: boolean;
     message?: string;
     data?: any;
 }
@@ -18,6 +18,13 @@ export interface IFeature {
     price: string;
     _id: string;
     isNew?: boolean;
+}
+
+export interface IImage {
+    name?: string;
+    url?: string;
+    isMain?: boolean;
+    _id?: string;
 }
 
 export class Item {
@@ -37,6 +44,7 @@ export class Item {
     buyurl: string;
     matchurl: string;
     features: IFeature[];
+    images: IImage[];
 
     constructor(item: Partial<ItemProduct> = {}) {
         this._id = item['_id'];
@@ -59,6 +67,7 @@ export class Item {
             weight: el.weight,
             ...(el.isNew ? {} : {_id: el._id}),
         }));
+        this.images = item['images'];
     }
 }
 
@@ -69,9 +78,9 @@ type UpdateState = {
     getAllItems: () => void;
     setItemForUpdate: (item: Item) => void;
     updateField: (data: Partial<Item>) => void;
-    triggerSuccess: (value: string | undefined) => void;
+    triggerSuccess: (value: boolean) => void;
     deleteItemProduct: (id: string) => Promise<any>;
-    isSuccess: string | undefined;
+    isSuccess: boolean;
     isLoading: boolean;
 };
 
@@ -80,7 +89,7 @@ export const useUpdateStore = create(
         subscribeWithSelector<UpdateState>((set, get) => ({
             items: [],
             group: [],
-            isSuccess: '',
+            isSuccess: false,
             itemForUpdate: new Item({}),
             isLoading: false,
             triggerSuccess: (value) => {
@@ -94,7 +103,6 @@ export const useUpdateStore = create(
                 set({items, group: [...new Set(array)]});
             },
             deleteItemProduct: async (itemId: string) => {
-
                 try {
                     set({isLoading: true})
                     const response = await axios.delete(`${BASE_URL}/product/delete`, {
@@ -109,6 +117,8 @@ export const useUpdateStore = create(
 
                 } catch (err) {
                     set({isLoading: false})
+                    return false
+
                 }
 
             },
@@ -118,18 +128,17 @@ export const useUpdateStore = create(
                     set({isLoading: true});
                     const response: AxiosResponse<ApiResponse> = await axios({
                         method: 'put',
-                        url: 'https://himdecor-back-new.vercel.app/product/update',
+                        url: `${BASE_URL}/product/update`,
                         data: new Item(data),
                     });
                     set({isLoading: false});
-                    if (response.data?.success) {
-                        set({isSuccess: 'updated'});
+                    if (response.data?.isSuccessful) {
+                        set({isSuccess: true});
                     } else {
-                        set({isSuccess: 'error'});
+                        set({isSuccess: false});
                     }
                 } catch (error) {
-                    set({isLoading: false});
-                    set({isSuccess: 'error'});
+                    set({isLoading: false, isSuccess: false});
                 }
             }
         })),
