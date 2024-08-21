@@ -1,21 +1,20 @@
 "use client";
 
-import React, {ChangeEvent, FormEvent, useState} from "react";
+import React, {ChangeEvent} from "react";
 import axios from "axios";
 import {useUpdateStore} from "@/utils/state/update.state";
+import {BASE_URL} from "@/utils/constants/api";
 
 interface UploadFormProps {
-    fileName: string;
     targetDir: string;
+    files: File[];
+    setFiles: (files: File[]) => void;
 }
 
-export const UploadForm: React.FC<UploadFormProps> = ({fileName, targetDir}) => {
-    const [file, setFile] = useState<File | null>(null);
+export const UploadForm: React.FC<UploadFormProps> = ({targetDir, files, setFiles}) => {
 
-    const itemForUpdate = useUpdateStore((state) => state.itemForUpdate);
+    const {itemForUpdate, triggerLoading, setFieldLocalItem, uploadFlesToServer} = useUpdateStore((state) => state);
 
-    console.log(fileName)
-    console.log(itemForUpdate)
 
     // const resizeFile = (file: Blob) =>
     //     new Promise((resolve) => {
@@ -34,75 +33,77 @@ export const UploadForm: React.FC<UploadFormProps> = ({fileName, targetDir}) => 
     //     });
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setFile(e.target.files[0]);
+        const selectedFiles = e.target.files;
+        if (selectedFiles) {
+            setFiles(Array.from(selectedFiles));
         }
     };
-    const handleDeleteFile = async () => {
+    const handleDeleteFile = async (fileName: string | undefined) => {
         // const image = (await resizeFile(file)) as Blob;
         const requestBody = {
-            fileName: itemForUpdate.images[0].name,
-            targetDir
-        };
-        try {
-            const response = await axios.post(
-                "https://himdecor-back-new.vercel.app/file/deleteFile",
-                requestBody,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                },
-            );
-            console.log(response);
-        } catch (error) {
-            console.error("Error uploading file:", error);
-        }
-    };
-
-    const onHandleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        if (!file || !targetDir) return;
-        console.log(file)
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('fileName', file.name);
-        formData.append('targetDir', targetDir);
-
-        try {
-            const response = await axios.post(
-                "https://himdecor-back-new.vercel.app/file/uploadFile",
-                formData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                },
-            );
-            console.log(response);
-        } catch (error) {
-            console.error("Error uploading file:", error);
-        }
-    };
-
-    return (
-        <div>
-            <form onSubmit={onHandleSubmit}>
-                <div>
-                    <label>
-                        Select File:
-                        <input type="file" onChange={handleFileChange}/>
-                    </label>
-                </div>
-                <button type="submit">Upload</button>
-            </form>
-            {!file && itemForUpdate.images.map(el => <img
-                src={file ? URL.createObjectURL(file) : el.url}
-                alt="Resized"/>)
+            fileName,
+            targetDir,
+            body: {
+                _id: itemForUpdate._id,
+                images: itemForUpdate.images.filter(img => img.name !== fileName)
             }
-            <div onClick={handleDeleteFile}
+        };
+        triggerLoading(true)
+        try {
+            const response = await axios.post(`${BASE_URL}/file/deleteFile`, requestBody, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            },);
+            setFieldLocalItem({field: 'images', value: itemForUpdate.images.filter(img => img.name !== fileName)})
+            triggerLoading(false);
+        } catch (error) {
+            console.error("Error uploading file:", error);
+            triggerLoading(false);
+
+        }
+    };
+
+    const onHandleDeleteFileLocal = (name: string) => {
+        setFiles(files.filter(el => el.name !== name))
+    }
+
+
+    const onHandleSubmit = async () => {
+        uploadFlesToServer(files, targetDir)
+
+    };
+
+    return (<div>
+        {itemForUpdate.images.length > 0 && itemForUpdate.images.map(el => <div className={'w-48 h-auto'}>
+            <p>Завантаженні файли:</p>
+            <img
+                src={el.url}
+                alt="Resized"/>
+            <div onClick={() => {
+                handleDeleteFile(el.name)
+            }}
                  className={'w-32 h-8 border-2 border-gray-500 bg-red cursor-pointer text-white'}>DELETE Image
             </div>
+        </div>)}
+        <div>
+            <label>
+                Завантажити файли:
+                <input className={'hidden'} multiple type="file" onChange={handleFileChange}/>
+            </label>
+            <button onClick={onHandleSubmit} type="submit">Upload</button>
         </div>
-    );
+        <div className={'flex'}>
+            {files.length > 0 && files.map(el => <div className={'w-48 h-auto'}>
+                <img
+                    src={URL.createObjectURL(el)}
+                    alt="Resized"/>
+                <div onClick={() => {
+                    onHandleDeleteFileLocal(el.name)
+                }}
+                     className={'w-32 h-8 border-2 border-gray-500 bg-red cursor-pointer text-white'}>DELETE Image
+                </div>
+            </div>)}
+        </div>
+    </div>);
 };

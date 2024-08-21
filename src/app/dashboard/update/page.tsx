@@ -12,6 +12,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 export default function Home() {
     const [groupName, setGroupName] = useState<string>("");
     const [localItem, setLocalItem] = useState<Item>(new Item({}));
+    const [files, setFiles] = useState<File[]>([]);
 
     const items = useUpdateStore((state) => state.items);
     const group = useUpdateStore((state) => state.group);
@@ -47,7 +48,6 @@ export default function Home() {
             _id: itemForUpdate._id,
             images: createImagesObj([itemForUpdate.urlimage])
         }
-        console.log(payload)
         updateField(payload);
     };
 
@@ -130,7 +130,7 @@ export default function Home() {
                 {itemForUpdate._id && (
                     <div>
                         <DeleteItemById itemId={itemForUpdate._id}/>
-                        <UploadForm fileName={itemForUpdate.urlimage} targetDir={'/home/alex/public/images/products'}/>
+                        <UploadForm files={files} setFiles={setFiles} targetDir={'/home/alex/public/images/products'}/>
                         <FormComponent
                             localItem={localItem}
                             setLocalItem={setLocalItem}

@@ -77,9 +77,12 @@ type UpdateState = {
     itemForUpdate: Item;
     getAllItems: () => void;
     setItemForUpdate: (item: Item) => void;
+    setFieldLocalItem: ({field, value}: { field: string; value: any }) => void;
     updateField: (data: Partial<Item>) => void;
     triggerSuccess: (value: boolean) => void;
+    triggerLoading: (value: boolean) => void;
     deleteItemProduct: (id: string) => Promise<any>;
+    uploadFlesToServer: (files: File[], targetDir: string) => Promise<any>;
     isSuccess: boolean;
     isLoading: boolean;
 };
@@ -95,12 +98,38 @@ export const useUpdateStore = create(
             triggerSuccess: (value) => {
                 set({isSuccess: value});
             },
+            triggerLoading: (value: boolean) => {
+                set({isLoading: value});
+            },
+            setFieldLocalItem: ({field, value}) => {
+                const {itemForUpdate} = get();
+                set({itemForUpdate: {...itemForUpdate, [field]: value}})
+            },
             getAllItems: async () => {
                 const response = await fetch(
                     `${BASE_URL}/product/get`);
                 const items: Item[] = await response.json();
                 const array = items.map((el) => el.group);
                 set({items, group: [...new Set(array)]});
+            },
+            uploadFlesToServer: async (files: File[], targetDir: string) => {
+                if (!files || !targetDir) return;
+                const formData = new FormData();
+
+                files.forEach(f => {
+                    formData.append('pictures', f);
+                });
+                formData.append('targetDir', targetDir);
+                try {
+                    const response = await axios.post(`${BASE_URL}/file/uploadFile`, formData, {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    });
+                } catch (error) {
+                    console.error("Error uploading file:", error);
+                }
+                return ['qq', 'qwe']
             },
             deleteItemProduct: async (itemId: string) => {
                 try {
@@ -118,9 +147,7 @@ export const useUpdateStore = create(
                 } catch (err) {
                     set({isLoading: false})
                     return false
-
                 }
-
             },
             setItemForUpdate: (item) => set({itemForUpdate: item}),
             updateField: async (data) => {
