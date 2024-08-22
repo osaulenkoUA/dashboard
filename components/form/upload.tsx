@@ -5,6 +5,7 @@ import axios from "axios";
 import {useUpdateStore} from "@/utils/state/update.state";
 import {BASE_URL} from "@/utils/constants/api";
 import {Delete} from "@/components/icons/delete";
+import Resizer from "react-image-file-resizer";
 
 interface UploadFormProps {
     targetDir: string;
@@ -17,34 +18,36 @@ export const UploadForm: React.FC<UploadFormProps> = ({targetDir, files, setFile
     const {itemForUpdate, triggerLoading, setFieldLocalItem} = useUpdateStore((state) => state);
 
 
-    // const resizeFile = (file: Blob) =>
-    //     new Promise((resolve) => {
-    //         Resizer.imageFileResizer(
-    //             file,
-    //             300,
-    //             300,
-    //             "JPEG",
-    //             80,
-    //             0,
-    //             (uri) => {
-    //                 resolve(uri);
-    //             },
-    //             "file",
-    //         );
-    //     });
+    const resizeFile = (file: File) =>
+        new Promise((resolve) => {
+            Resizer.imageFileResizer(
+                file,
+                300,
+                300,
+                "PNG",
+                100,
+                0,
+                (uri) => {
+                    resolve(uri);
+                },
+                "file",
+            );
+        });
 
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = e.target.files;
         if (selectedFiles) {
             const arrayFiles = Array.from(selectedFiles)
-            if (arrayFiles.length <= 5) {
-                setFiles(Array.from(arrayFiles))
-            } else alert('Максимум до завантаження 5 файлів за 1 раз')
 
+            const resizedFiles = await Promise.all(
+                arrayFiles.map(async (f) => await resizeFile(f) as File)
+            );
+            if (arrayFiles.length <= 5) {
+                setFiles(resizedFiles)
+            } else alert('Максимум до завантаження 5 файлів за 1 раз')
         }
     };
     const handleDeleteFile = async (fileName: string | undefined) => {
-        // const image = (await resizeFile(file)) as Blob;
         const requestBody = {
             fileName,
             targetDir,
@@ -55,7 +58,7 @@ export const UploadForm: React.FC<UploadFormProps> = ({targetDir, files, setFile
         };
         triggerLoading(true)
         try {
-            const response = await axios.post(`${BASE_URL}/file/deleteFile`, requestBody, {
+            await axios.post(`${BASE_URL}/file/deleteFile`, requestBody, {
                 headers: {
                     "Content-Type": "application/json",
                 },
