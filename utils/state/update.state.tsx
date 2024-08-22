@@ -106,11 +106,18 @@ export const useUpdateStore = create(
                 set({itemForUpdate: {...itemForUpdate, [field]: value}})
             },
             getAllItems: async () => {
-                const response = await fetch(
-                    `${BASE_URL}/product/get`);
-                const items: Item[] = await response.json();
-                const array = items.map((el) => el.group);
-                set({items, group: [...new Set(array)]});
+                set({isLoading: true})
+                try {
+                    const response = await fetch(
+                        `${BASE_URL}/product/get`);
+                    const items: Item[] = await response.json();
+                    const array = items.map((el) => el.group);
+                    set({items, group: [...new Set(array)]});
+                    set({isLoading: false})
+                } catch (err) {
+                    set({isLoading: false})
+
+                }
             },
             uploadFlesToServer: async (files: File[], targetDir: string) => {
                 if (!files || !targetDir) return;
@@ -148,7 +155,6 @@ export const useUpdateStore = create(
                         set({items: updatedItems, isLoading: false, itemForUpdate: new Item({})});
                     }
                     return response.data.isSuccessful
-
                 } catch (err) {
                     set({isLoading: false})
                     return false
@@ -156,6 +162,7 @@ export const useUpdateStore = create(
             },
             setItemForUpdate: (item) => set({itemForUpdate: item}),
             updateField: async (data) => {
+                const {items} = get();
                 try {
                     set({isLoading: true});
                     const response: AxiosResponse<ApiResponse> = await axios({
@@ -165,7 +172,9 @@ export const useUpdateStore = create(
                     });
                     set({isLoading: false});
                     if (response.data?.isSuccessful) {
-                        set({isSuccess: true});
+                        const updatedItems = items.map(el => el._id === response.data.data._id ? response.data.data : el)
+
+                        set({items: updatedItems, isSuccess: true});
                     } else {
                         set({isSuccess: false});
                     }
