@@ -4,6 +4,7 @@ import React, {ChangeEvent} from "react";
 import axios from "axios";
 import {useUpdateStore} from "@/utils/state/update.state";
 import {BASE_URL} from "@/utils/constants/api";
+import {Delete} from "@/components/icons/delete";
 
 interface UploadFormProps {
     targetDir: string;
@@ -69,17 +70,26 @@ export const UploadForm: React.FC<UploadFormProps> = ({targetDir, files, setFile
     }
 
     return (<div>
-        {itemForUpdate.images.length > 0 && itemForUpdate.images.map(el => <div className={'w-48 h-auto'}>
-            <p>Завантаженні файли:</p>
-            <img
-                src={el.url}
-                alt="Resized"/>
-            <div onClick={() => {
-                handleDeleteFile(el.name)
-            }}
-                 className={'w-32 h-8 border-2 border-gray-500 bg-red cursor-pointer text-white'}>DELETE Image
-            </div>
-        </div>)}
+        <p className="mb-4 text-3xl text-pink-900 font-bold">Завантажені файли:</p>
+        <div className={' grid grid-cols-5 gap-4 justify-items-center'}>
+            {itemForUpdate.images.length > 0 && itemForUpdate.images.map((el, index) => (
+                <div key={index} className="w-48">
+
+                    <img
+                        src={el.url}
+                        alt="Resized"
+                        className="w-full h-auto object-cover rounded-md shadow-lg"
+                    />
+                    <div
+                        onClick={() => handleDeleteFile(el.name)}
+                        className={'w-10 h-10 m-auto mt-3  cursor-pointer'}
+                    >
+                        <Delete/>
+                    </div>
+                </div>
+            ))}
+        </div>
+
         <div>
             <label>
                 Завантажити файли:

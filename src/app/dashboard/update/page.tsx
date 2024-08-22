@@ -136,7 +136,7 @@ export default function Home() {
                 </div>
 
                 {itemForUpdate._id && (
-                    <div>
+                    <div className={'p-4'}>
                         <DeleteItemById itemId={itemForUpdate._id}/>
                         <UploadForm files={files} setFiles={setFiles} targetDir={PRODUCTS_IMAGES}/>
                         <FormComponent
