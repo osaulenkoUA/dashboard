@@ -56,6 +56,7 @@ export default function Home() {
             images: [...itemForUpdate.images, ...createImagesObj(response)]
         }
         updateField(payload);
+        setFiles([])
     };
 
     return (
