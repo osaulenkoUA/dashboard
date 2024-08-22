@@ -36,7 +36,11 @@ export const UploadForm: React.FC<UploadFormProps> = ({targetDir, files, setFile
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = e.target.files;
         if (selectedFiles) {
-            setFiles(Array.from(selectedFiles));
+            const arrayFiles = Array.from(selectedFiles)
+            if (arrayFiles.length <= 5) {
+                setFiles(Array.from(arrayFiles))
+            } else alert('Максимум до завантаження 5 файлів за 1 раз')
+
         }
     };
     const handleDeleteFile = async (fileName: string | undefined) => {
@@ -90,23 +94,35 @@ export const UploadForm: React.FC<UploadFormProps> = ({targetDir, files, setFile
             ))}
         </div>
 
-        <div>
-            <label>
-                Завантажити файли:
-                <input className={'hidden'} multiple type="file" onChange={handleFileChange}/>
+        <div className="flex flex-col items-start p-4 box-content">
+            <label
+                className="text-lg font-semibold mb-2 cursor-pointer block border-orange w-max text-white rounded-2xl bg-orange p-2">
+                Вибрати зображення
+                <input
+                    className="hidden"
+                    type="file"
+                    multiple
+                    max={5}
+                    onChange={handleFileChange}
+                />
             </label>
         </div>
-        <div className={'flex'}>
+        <div className={' grid grid-cols-5 gap-4 justify-items-center'}>
             {files.length > 0 && files.map(el => <div className={'w-48 h-auto'}>
                 <img
                     src={URL.createObjectURL(el)}
                     alt="Resized"/>
-                <div onClick={() => {
-                    onHandleDeleteFileLocal(el.name)
-                }}
-                     className={'w-32 h-8 border-2 border-gray-500 bg-red cursor-pointer text-white'}>DELETE Image
+                <div
+                    onClick={() => onHandleDeleteFileLocal(el.name)}
+                    className={'w-10 h-10 m-auto mt-3  cursor-pointer'}
+                >
+                    <Delete/>
                 </div>
             </div>)}
         </div>
+        {files.length > 0 &&
+            <p className={'mt-4 text-red font-bold underline'}>Завантаження зображень відбудеться під час оновлення
+                карточки
+                товару</p>}
     </div>);
 };
