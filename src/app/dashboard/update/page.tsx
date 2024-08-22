@@ -8,6 +8,7 @@ import compareObjects from "@/utils/helpers/compareObjects";
 import {IImage, Item, useUpdateStore} from "@/utils/state/update.state";
 import React, {useEffect, useState} from "react";
 import ClipLoader from "react-spinners/ClipLoader";
+import {PRODUCTS_IMAGES} from "@/utils/constants/dir";
 
 export default function Home() {
     const [groupName, setGroupName] = useState<string>("");
@@ -24,29 +25,35 @@ export default function Home() {
         isSuccess,
         isLoading,
         triggerSuccess,
+        uploadFlesToServer
     } = useUpdateStore((state) => state);
 
     useEffect(() => {
         getAllItems();
     }, []);
 
+    const createImagesObj = (listName: string[]): IImage[] => {
+        const fileSet = new Set(listName);
 
-    const createImagesObj = (listName: [string]): IImage[] => {
-        return [
-            {
-                name: listName[0] + '.png',
-                url: `https://www.himdecor.ua/shares/images/products/${listName[0]}.png`,
-                isMain: true
-            }
-        ]
-    }
+        return files.map(file => {
+            const fileName = file.name;
+            const matched = Array.from(fileSet).find(str => str.includes(fileName));
+            return matched ? {
+                name: fileName,
+                url: `https://www.himdecor.ua/shares/images/products/${fileName}`,
+                isMain: false
+            } : {};
+        });
+    };
 
-    const onHandleSubmit = (data: Partial<Item>) => {
+
+    const onHandleSubmit = async (data: Partial<Item>) => {
+        const response = files.length > 0 ? await uploadFlesToServer(files, PRODUCTS_IMAGES) : []
         const itemOnlyWithChangedFields = compareObjects(data, itemForUpdate);
         const payload = {
             ...itemOnlyWithChangedFields,
             _id: itemForUpdate._id,
-            images: createImagesObj([itemForUpdate.urlimage])
+            images: [...itemForUpdate.images, ...createImagesObj(response)]
         }
         updateField(payload);
     };
@@ -130,7 +137,7 @@ export default function Home() {
                 {itemForUpdate._id && (
                     <div>
                         <DeleteItemById itemId={itemForUpdate._id}/>
-                        <UploadForm files={files} setFiles={setFiles} targetDir={'/home/alex/public/images/products'}/>
+                        <UploadForm files={files} setFiles={setFiles} targetDir={PRODUCTS_IMAGES}/>
                         <FormComponent
                             localItem={localItem}
                             setLocalItem={setLocalItem}

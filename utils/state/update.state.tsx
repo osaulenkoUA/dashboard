@@ -114,6 +114,8 @@ export const useUpdateStore = create(
             },
             uploadFlesToServer: async (files: File[], targetDir: string) => {
                 if (!files || !targetDir) return;
+                set({isLoading: true})
+
                 const formData = new FormData();
 
                 files.forEach(f => {
@@ -126,10 +128,13 @@ export const useUpdateStore = create(
                             "Content-Type": "multipart/form-data",
                         },
                     });
+                    set({isLoading: false})
+                    return response.data.uploadedFiles
                 } catch (error) {
                     console.error("Error uploading file:", error);
+                    set({isLoading: false})
+                    return []
                 }
-                return ['qq', 'qwe']
             },
             deleteItemProduct: async (itemId: string) => {
                 try {
