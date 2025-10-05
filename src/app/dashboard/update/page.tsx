@@ -58,7 +58,6 @@ export default function Home() {
         updateField(payload);
         setFiles([])
     };
-
     return (
         <section className="h-screen relative">
             <h1 className="text-center text-4xl font-extrabold text-gray-900 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent mb-6 shadow-lg">

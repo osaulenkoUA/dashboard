@@ -66,8 +66,8 @@ export class Item {
             price: el.price,
             weight: el.weight,
             ...(el.isNew ? {} : {_id: el._id}),
-        }));
-        this.images = item['images'];
+        }))??[];
+        this.images = item['images']??[];
     }
 }
 
@@ -79,6 +79,7 @@ type UpdateState = {
     setItemForUpdate: (item: Item) => void;
     setFieldLocalItem: ({field, value}: { field: string; value: any }) => void;
     updateField: (data: Partial<Item>) => void;
+    createProduct: (data: Partial<Item>) => void;
     triggerSuccess: (value: boolean) => void;
     triggerLoading: (value: boolean) => void;
     deleteItemProduct: (id: string) => Promise<any>;
@@ -116,7 +117,6 @@ export const useUpdateStore = create(
                     set({isLoading: false})
                 } catch (err) {
                     set({isLoading: false})
-
                 }
             },
             uploadFlesToServer: async (files: File[], targetDir: string) => {
@@ -161,6 +161,19 @@ export const useUpdateStore = create(
                 }
             },
             setItemForUpdate: (item) => set({itemForUpdate: item}),
+            createProduct:async (data)=>{
+              try{
+                  set({isLoading: true});
+                  const response: AxiosResponse<ApiResponse> = await axios({
+                      method: 'post',
+                      url: `${BASE_URL}/product/add`,
+                      data: new Item(data),
+                  });
+                  console.log(response)
+                  set({isLoading: false});
+              }  catch (err){
+                  console.log('error',err)}
+            },
             updateField: async (data) => {
                 const {items} = get();
                 try {

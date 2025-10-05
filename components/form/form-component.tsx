@@ -1,5 +1,6 @@
-import {IFeature, IImage, Item, useUpdateStore} from '@/utils/state/update.state';
+import {IFeature, IImage, Item} from '@/utils/state/update.state';
 import {v4 as uuidv4} from 'uuid';
+import {groups} from "@/utils/constants/groups"
 
 interface IProps {
     localItem: Item;
@@ -54,13 +55,12 @@ export const FormComponent = ({
                                   submit,
                                   subbmitButton,
                               }: IProps) => {
-    const group = useUpdateStore((state) => state.group);
-
     const handleSubmit = (event: any) => {
         event.preventDefault();
         const data = new FormData(event.target);
         const formObject = Object.fromEntries(data.entries());
         const payload = {...formObject, features: localItem.features};
+        console.log(payload)
         submit(payload);
     };
 
@@ -101,7 +101,7 @@ export const FormComponent = ({
     return (
         <form
             onSubmit={handleSubmit}
-            className={'bg-white rounded-lg shadow-md p-4 block mt-8'}
+            className={'bg-white rounded-lg p-4 block mt-8 w-1/2 m-auto'}
         >
             <div className="mb-4">
                 <label htmlFor="name" className={'block text-pink-900 font-bold'}>
@@ -132,7 +132,7 @@ export const FormComponent = ({
                     <option value="" disabled>
                         Select a category
                     </option>
-                    {group.map((category) => (
+                    {groups.map((category) => (
                         <option key={category} value={category}>
                             {category}
                         </option>
